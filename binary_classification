@@ -1,0 +1,108 @@
+#Alex Newhall Purdue IE332 Project
+#12/5/23 4 authors
+#This program creates a binary classification ML model for an anonymized dataset
+
+
+#PACKAGE INSTALLATION SECTION
+if (!require(tidyverse, quietly = TRUE)) {
+  install.packages("tidyverse")   #for data handling
+  library(tidyverse)
+}
+if (!require(caret, quietly = TRUE)) {
+  install.packages("caret")       #for machine learning
+  library(caret)
+}
+
+#DIRECTORY INITIALIZATION SECTION (subject to change)
+setwd("\\\\nas01.itap.purdue.edu/puhome/G38_Project2")
+
+
+#####DATA SELECTION SECTION#####
+
+#DF INITIALIZATION SECTION
+#Imports data and converts to useful state
+orig_df <- read.csv("training_set.csv", header = TRUE, sep = ",")
+orig_df % mutate_all(~ifelse(. == "na", NA, .))
+orig_df % mutate_at(vars(-1), as.numeric)
+orig_df % mutate(class = factor(ifelse(class == "pos", 1, 0), levels = c(1, 0)))
+cleaned_df <- orig_df[,-1]    #main df data selection will modify
+
+#NA IMPUTATION SECTION (median method)
+#Replace NA values with predicted numbers
+cleaned_df % mutate_all(~ ifelse(is.na(.), median(., na.rm = TRUE), .))
+
+#STANDARDIZATION SECTION (robust method)
+#Standardize each col to mean of 0
+for (i in seq_along(cleaned_df)) {
+  #Use IQR to standardize if possible
+  if (IQR(cleaned_df[, i]) != 0) {
+    cleaned_df[, i] <- (cleaned_df[, i] - median(cleaned_df[, i])) / IQR(cleaned_df[, i])
+    #If IQR is 0, standardizes using scale
+  } else {
+    cleaned_df % mutate(across(all_of(names(cleaned_df)[i]), scale))
+  }
+}
+#Removes columns that were just one repeated number
+cleaned_df % select(names(cleaned_df)[colSums(is.na(cleaned_df)) == 0])
+
+#PCA SECTION (prcomp method)
+#prcomp finds variance of features
+pca_result <- prcomp(cleaned_df, scale. = TRUE)
+pca_std_dev <- pca_result$sdev
+pca_var <- (pca_std_dev^2) / sum(pca_std_dev^2)
+#Keeps features based on high variance
+var_threshold <- 0.85      #Threshold of variance used to keep features
+num_components_to_keep = var_threshold)[1]
+cleaned_df <- as.data.frame(pca_result$x[, 1:num_components_to_keep])
+
+#DF REBUILD SECTION
+#Class column added
+cleaned_df <- cbind(orig_df[, 1], cleaned_df)
+colnames(cleaned_df)[1] <- 'class'
+
+#ROW SELECTION SECTION (Least NA method)
+#Initialize
+row_indices_ordered <- order(rowMeans(is.na(orig_df)), decreasing = FALSE)    #row indices ordered by number of NAs contained
+B_limit <- 39990   #given constraints
+neg_pt <- 1
+pos_pt <- 10
+B <- 0
+i <- 1
+#Loop builds row selection until B_limit is met
+while (B < B_limit && i <= length(row_indices_ordered)) {
+  sign <- cleaned_df[row_indices_ordered[i], 1]
+  B <- B + ifelse(sign == 0, neg_pt, pos_pt)    #determines point value
+  i <- i + 1
+}
+i <- i - 1
+#Final cleaned_df is built to output to ML section
+selected_rows <- row_indices_ordered[1:i]
+ordered_selected_rows <- sort(selected_rows)
+cleaned_df <- cleaned_df[ordered_selected_rows, , drop = FALSE]
+
+
+#####ML MODEL SECTION#####
+
+set.seed(12345)    #for repeatable random processes
+
+#DATA PARTITION SECTION (change?)
+index <- createDataPartition(cleaned_df$class, p=0.8, list=FALSE)
+test <- cleaned_df[-index,]
+cleaned_df <- cleaned_df[index,]
+
+#MODEL INITIALIZATION SECTION
+#All models will be using the accuracy metric, 10-fold cross-validation, and the same loss matrix, so we define those to simplify the commands later.
+metric <- "Accuracy"  
+x <- matrix(data = c(0,500,10,0), nrow = 2, ncol = 2) #The given cost matrix
+control <- trainControl(method="cv", number=5)
+
+#MODEL TRAINING SECTION (cost sensitive CART method)
+fit1 <- train(class~., data=cleaned_df, method="rpart", metric=metric, trControl=control, parms=list(loss=x))
+
+#PREDICTION SECTION
+pred1.test <- predict(fit1, test)
+pred1.train <- predict(fit1, cleaned_df)
+
+#RESULTS SECTION
+confusionMatrix(pred1.test, test$class)
+confusionMatrix(pred1.train, cleaned_df$class)

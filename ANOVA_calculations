@@ -1,0 +1,209 @@
+#Alex Newhall IE330 HW6 R Code
+#This assignment walks through various manual ANOVA calculations to determine differences in sample means
+
+###############################################
+
+#Problem 1:
+#Given:
+a1 <- 4           #number of levels
+Dft1 <- 31        #total degrees of freedom
+MSf1 <- 330.4716  #mean square of factors
+F01 <- 4.42       #F0 value
+
+#Part a:
+n1 <- ((31-(a1-1)) / 4) - 1   #Number of replicates
+
+#Part b:
+Dff1 <- a1 - 1       #factor degrees of freedom
+Dfe1 <- a1 * (n1-1)  #error degrees of freedom
+SSf1 <- MSf1 * Dff1  #sum of squares of factor
+MSe1 <- MSf1 / F01   #mean square of error
+SSe1 <- MSe1 * Dfe1  #sum of square of error
+SSt1 <- SSf1 + SSe1  #sum of square of total
+Pvalue1 <- 0.015378   #P value at .05, P(3.1>4.42)
+
+#Part c:
+SSf1 < SSe1  #If TRUE is returned, then difference in factor-level is not significant
+
+###############################################
+
+#Problem 2:
+#Given:
+SCCM125 <- c(2.7, 4.6, 2.6, 3.0, 3.2, 3.8)
+SCCM160 <- c(4.9, 4.6, 5.0, 4.2, 3.6, 4.2)
+SCCM200 <- c(4.6, 3.4, 2.9, 3.5, 4.1, 5.1)
+a2 <- 3
+n2 <- length(SCCM125)
+alpha21 <- 0.05
+alpha22 <- 0.01
+
+#Part a:
+xbar20 <- (mean(SCCM125) + mean(SCCM160) + mean(SCCM200)) / a2   #global mean
+xbar21 <- mean(SCCM125)
+xbar22 <- mean(SCCM160)
+xbar23 <- mean(SCCM200)
+stddev21 <- sd(SCCM125)
+stddev22 <- sd(SCCM160)
+stddev23 <- sd(SCCM200)
+f2 <- 3.68   #table value
+
+SSf2 <- (n2*(xbar21-xbar20)^2) + (n2*(xbar22-xbar20)^2) + (n2*(xbar23-xbar20)^2)
+SSe2 <- ((n2-1)*stddev21^2) + ((n2-1)*stddev22^2) + ((n2-1)*stddev23^2)
+SSt2 <- SSf2 + SSe2
+dff2 <- a2 - 1
+dfe2 <- a2 * (n2-1)
+dft2 <- a2 * n2 - 1
+MSf2 <- SSf2 / dff2
+MSe2 <- SSe2 / dfe2
+F02 <- MSf2 / MSe2
+
+Pvalue2 <- 0.0532
+Pvalue2 < alpha21   #If FALSE return, fail to reject, no sig. diff.
+
+#Part b:
+t2 <- 2.947  #t-table value
+LSD2 <- t2 * sqrt((2*MSe2)/n2)
+oneVStwo2 <- abs(xbar21 - xbar22)
+oneVSthree2 <- abs(xbar21 - xbar23)
+twoVSthree2 <- abs(xbar22 - xbar23)
+
+oneVStwo2 < LSD2
+oneVSthree2 < LSD2
+twoVSthree2 < LSD2
+#If any of the three statements return TRUE, no significant difference between those pairs of means
+
+###############################################
+
+#Problem 3:
+#Given:
+Prep1 <- c(14.8, 14.8, 14.7, 14.8, 14.9)
+Prep2 <- c(14.6, 15, 14.9, 14.8, 14.7)
+Prep3 <- c(12.7, 11.6, 12.4, 12.7, 12.1)
+Prep4 <- c(14.2, 14.4, 14.4, 12.2, 11.7)
+a3 <- 4
+n3 <- length(Prep1)
+alpha3 <- 0.05
+
+#Part a:
+xbar30 <- (mean(Prep1) + mean(Prep2) + mean(Prep3) + mean(Prep4)) / a3   #global mean
+xbar31 <- mean(Prep1)
+xbar32 <- mean(Prep2)
+xbar33 <- mean(Prep3)
+xbar34 <- mean(Prep4)
+stddev31 <- sd(Prep1)
+stddev32 <- sd(Prep2)
+stddev33 <- sd(Prep3)
+stddev34 <- sd(Prep4)
+
+dff3 <- a3 - 1
+dfe3 <- a3 * (n3-1)
+dft3 <- a3 * n3 - 1
+SSf3 <- (n3*(xbar31-xbar30)^2) + (n3*(xbar32-xbar30)^2) + (n3*(xbar33-xbar30)^2) + (n3*(xbar34-xbar30)^2)
+SSe3 <- ((n3-1)*stddev31^2) + ((n3-1)*stddev32^2) + ((n3-1)*stddev33^2) + ((n3-1)*stddev34^2)
+SSt3 <- SSf3 + SSe3
+MSf3 <- SSf3 / dff3
+MSe3 <- SSe3 / dfe3
+
+F03 <- MSf3 / MSe3
+f3 <- 3.24   #table value
+F03 > f3  #if return TRUE significant difference, reject H0
+
+#Part b:
+#Pvalue3 <- P(f3 > F03)
+Pvalue3 <- .000069
+
+#Part c:
+t3 <- 2.12  #table value
+CI31 <- xbar31 - t3 * sqrt(MSe3 / n3)
+CI32 <- xbar31 + t3 * sqrt(MSe3 / n3)
+CI3 <- c(CI31, CI32)  #confidence interval for preparation 1
+
+#Part d:
+LSD3 <- t3 * sqrt(MSe3 / n3)
+oneVStwo3 <- abs(xbar31 - xbar32)
+oneVSthree3 <- abs(xbar31 - xbar33)
+oneVSfour3 <- abs(xbar31 - xbar34)
+twoVSthree3 <- abs(xbar32 - xbar33)
+twoVSfour3 <- abs(xbar32 - xbar34)
+threeVSfour3 <- abs(xbar33 - xbar34)
+
+oneVStwo3 < LSD3
+oneVSthree3 < LSD3
+oneVSfour3 < LSD3
+twoVSthree3 < LSD3
+twoVSfour3 < LSD3
+threeVSfour3 < LSD3
+#If return TRUE, no difference between factor levels
+
+###############################################
+
+#Problem 4:
+#Given:
+Level1 <- c(8.2, 8, 8.2, 7.9, 8.1, 8)
+Level2 <- c(8.3, 8.4, 8.3, 8.2, 8.3, 8.1)
+Level3 <- c(8.9, 8.7, 8.9, 8.4, 8.3, 8.5)
+Level4 <- c(8.5, 8.7, 8.7, 8.7, 8.8, 8.8)
+Level5 <- c(8.8, 9.1, 9, 8.7, 8.9, 8.5)
+Level6 <- c(8.6, 8.5, 8.6, 8.7, 8.8, 8.8)
+n4 <- length(Level1)
+a4 <- 6
+alpha4 <- 0.05
+
+#Part a:
+xbar41 <- mean(Level1)
+xbar42 <- mean(Level2)
+xbar43 <- mean(Level3)
+xbar44 <- mean(Level4)
+xbar45 <- mean(Level5)
+xbar46 <- mean(Level6)
+xbar40 <- (xbar41+xbar42+xbar43+xbar44+xbar45+xbar46) / a4
+stddev41 <- sd(Level1)
+stddev42 <- sd(Level2)
+stddev43 <- sd(Level3)
+stddev44 <- sd(Level4)
+stddev45 <- sd(Level5)
+stddev46 <- sd(Level6)
+
+dff4 <- a4 - 1
+dfe4 <- a4 * (n4-1)
+dft4 <- dff4 + dfe4
+SSf4 <- 2.586
+SSe4 <- 0.822
+SSt4 <- SSf4 + SSe4
+MSf4 <- SSf4 / dff4
+MSe4 <- SSe4 / dfe4
+F04 <- MSf4 / MSe4
+
+boxplot(Level1, Level2, Level3, Level4, Level5, Level6, xlab = "Factor Level", ylab = "Domain Spacing (nm)")
+
+#Part b:
+f4 <- 2.53  #table value
+#Pvalue4 <- P(f4 > F04)
+Pvalue4 <- 0.00001
+
+#Part c:
+AverageData <- c(xbar41, xbar42, xbar43, xbar44, xbar45, xbar46)
+plot(AverageData, type = "o", xlab = "factor level", ylab = "Domain Spacing Avg (nm)")
+#Positive correlation between factor level and average domain spacing
+
+#Part d: 
+t4 <- 2.042   #t-table value
+LSD4 <- t4 * sqrt(MSe4 / n4)
+oneVStwo4 <- abs(xbar41 - xbar42)
+oneVSthree4 <- abs(xbar41 - xbar43)
+oneVSfour4 <- abs(xbar41 - xbar44)
+oneVSfive4 <- abs(xbar41 - xbar45)
+oneVSsix4 <- abs(xbar41 - xbar46)
+twoVSthree4 <- abs(xbar42 - xbar43)
+twoVSfour4 <- abs(xbar42 - xbar44)
+twoVSfive4 <- abs(xbar42 - xbar45)
+twoVSsix4 <- abs(xbar42 - xbar46)
+threeVSfour4 <- abs(xbar43 - xbar44)
+threeVSfive4 <- abs(xbar43 - xbar45)
+threeVSsix4 <- abs(xbar43 - xbar46)
+fourVSfive4 <- abs(xbar44 - xbar45)
+fourVSsix4 <- abs(xbar44 - xbar46)
+fiveVSsix4 <- abs(xbar45 - xbar46)
+#If comparison is smaller than F0, no significant factor difference.
+
+

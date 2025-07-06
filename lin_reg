@@ -1,0 +1,191 @@
+#Alex Newhall IE330 HW5 R Code
+#3-21-23
+#Linear regression and matrix math problems
+
+###############################################
+
+#Problem 1 Part a:
+#Given:
+n <- 250
+
+NormalVector11 <- c(4.3875, -.040042, -.041679)
+NormalVector12 <- c(-.040042, .00060774, -.000073875)
+NormalVector13 <- c(-.041679, -.000073875, .00025766)
+NormalArray11 <- array(c(NormalVector11, NormalVector12, NormalVector13), dim = c(3, 3))
+
+NormalVector14 <- c(4757.9)
+NormalVector15 <- c(334335.8)
+NormalVector16 <- c(179706.7)
+NormalArray12 <- array(c(NormalVector14, NormalVector15, NormalVector16), dim = c(3, 1))
+
+#Calculations
+BetaArray1 <- NormalArray11 %*% NormalArray12
+#yhat1 <- BetaArray1[1,1] + BetaArray1[2,1]x11 + BetaArray1[3,1]x12
+
+#Part b:
+x11 <- 6
+x12 <- 34
+yhat1 <- BetaArray1[1,1] + BetaArray1[2,1]*x11 + BetaArray1[3,1]*x12
+
+###############################################
+
+#Problem 2 Part a:
+#Given:
+y2 <- c(240, 236, 270, 274, 301, 316, 300, 296, 267, 276, 288, 261)
+x21 <- c(25, 31, 45, 60, 65, 72, 80, 84, 75, 60, 50, 38)
+x22 <- c(24, 21, 24, 25, 25, 26, 25, 25, 24, 25, 25, 23)
+x23 <- c(91, 90, 88, 87, 91, 94, 87, 86, 88, 91, 91, 89)
+x24 <- c(100, 95, 110, 88, 94, 99, 97, 96, 110, 105, 100, 98)
+n2 <- length(y2)
+p2 <- 5
+
+#Calculations
+sum21 <- sum(y2)
+sum22 <- sum(x21)
+sum25 <- sum(x22)
+sum29 <- sum(x23)
+sum214 <- sum(x24)
+
+x21sq <- x21 ^ 2
+sum23 <- sum(x21sq)
+x21y2 <- x21 * y2
+sum24 <- sum(x21y2)
+x22sq <- x22 ^ 2
+sum26 <- sum(x22sq)
+x22y2 <- x22 * y2
+sum27 <- sum(x22y2)
+x22x21 <- x21 * x22
+sum28 <- sum(x22x21)
+x23sq <- x23 ^ 2
+sum210 <- sum(x23sq)
+x23y2 <- x21 * y2
+sum211 <- sum(x23y2)
+x23x21 <- x23 * x21
+sum212 <- sum(x23x21)
+x23x22 <- x23 * x22
+sum213 <- sum(x23x22)
+x24sq <- x24 ^ 2
+sum215 <- sum(x24sq)
+x24y2 <- x24 * y2
+sum216 <- sum(x24y2)
+x24x21 <- x24 * x21
+sum217 <- sum(x24x21)
+x24x22 <- x24 * x22
+sum218 <- sum(x24x22)
+x24x23 <- x24 * x23
+sum219 <- sum(x24x23)
+
+B20 <- 408.734
+B21 <- .998
+B22 <- 1.006
+B23 <- 1.725
+B24 <- -3.699
+
+#Part b:
+yhat2 <- B20 + B21 * x21 + B22 * x22 + B23 * x23 + B24 * x24
+e2 <- (y2 - yhat2) ^ 2
+SSe2 <- sum(e2)
+var2 <- SSe2 / (n2 - p2)
+
+#Part c:
+testx21 <- 75
+testx22 <- 24
+testx23 <- 90
+testx24 <- 98
+testyhat2 <- B20 + B21 * testx21 + B22 * testx22 + B23 * testx23 + B24 * testx24
+
+###############################################
+
+#Problem 3 Part a:
+#Given:
+y3 <- c(.749, .798, .849, .877, .929, .963, .997, 1.046, 1.133, 1.17, 1.215)
+x31 <- c(2.05, 2.15, 2.25, 2.3, 2.4, 2.47, 2.54, 2.64, 2.85, 2.94, 3.05)
+x32 <- c(.016, .02, .022, .023, .026, .028, .031, .034, .039, .042, .045)
+n3 <- length(y3)
+p3 <- 3
+
+#Calculations
+sum31 <- sum(y3)
+sum32 <- sum(x31)
+sum35 <- sum(x32)
+x31sq <- x31 ^ 2
+sum33 <- sum(x31sq)
+x31y3 <- x31 * y3
+sum34 <- sum(x31y3)
+x32sq <- x32 ^ 2
+sum36 <- sum(x32sq)
+x32y3 <- x32 * y3
+sum37 <- sum(x32y3)
+x32x31 <- x32 * x31
+sum38 <- sum(x32x31)
+
+#10.726=x*11+y*27.64+z*0.326
+#27.455=x*27.64+y*70.528+z*0.85
+#0.332=x*0.326+y*0.85+z*0.0106
+B30 <- -0.445
+B31 <- -5.771
+B32 <- 0.633
+yhat3 <- B30 + B31 * x31 + B32 * x32
+
+#Part b
+e3 <- (y3 - yhat3) ^ 2
+SSe3 <- sum(e3)
+var3 <- SSe3 / (n3 - p3)
+
+#Part c
+testx31 <- 2.5
+testx32 <- 0.03
+testyhat3 <- B30 + B31 * testx31 + B32 * testx32
+
+###############################################
+
+#Problem 4 Part a:
+#Given:
+y4 <- c(293, 230, 172, 91, 113, 125)
+x41 <- c(1.6, 15.5, 22, 43, 33, 40)
+x42 <- c(851, 816, 1058, 1201, 1357, 1115)
+n4 <- length(y4)
+p4 <- 3
+
+#Calculations
+sum41 <- sum(y4)
+sum42 <- sum(x41)
+sum45 <- sum(x42)
+x41sq <- x41 ^ 2
+sum43 <- sum(x41sq)
+x41y4 <- x41 * y4
+sum44 <- sum(x41y4)
+x42sq <- x42 ^ 2
+sum46 <- sum(x42sq)
+x42y4 <- x42 * y4
+sum47 <- sum(x42y4)
+x42x41 <- x42 * x41
+sum48 <- sum(x42x41)
+
+#6x+155.1y+6398z=1024
+#155.1x+5264.81y+178309.6z=20459.8
+#6398x+178309.6y+7036496z=1021006
+B40 <- 383.8
+B41 <- -3.638
+B42 <- -0.112
+yhat4 <- B40 + B41 * x41 + B42 * x42
+
+#Part b:
+e4 <- (y4 - yhat4) ^ 2
+SSe4 <- sum(e4)
+var4 <- SSe4 / (n4 - p4)
+
+#Part c:
+testx41 <- 25
+testx42 <- 1000
+testyhat4 <- B40 + B41 * testx41 + B42 * testx42
+
+#Part d:
+B43 <- .02
+yhat42 <- B40 + B41 * x41 + B42 * x42 + B43 * (x41 * x42)
+e42 <- (y4 - yhat42) ^ 2
+SSe42 <- sum(e42)
+var42 <- SSe42 / (n4 - p4)
+
+#Part e:
+#See paper for explanation
